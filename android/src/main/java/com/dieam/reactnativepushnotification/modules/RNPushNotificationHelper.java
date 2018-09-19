@@ -22,6 +22,20 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import android.support.annotation.Nullable;
+import com.facebook.common.executors.CallerThreadExecutor;
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.DataSource;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.common.Priority;
+import com.facebook.imagepipeline.common.ResizeOptions;
+import com.facebook.imagepipeline.core.ImagePipeline;
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
+
 import com.facebook.react.bridge.ReadableMap;
 
 import org.json.JSONArray;
@@ -43,6 +57,8 @@ public class RNPushNotificationHelper {
     private static final int ONE_MINUTE = 60 * 1000;
     private static final long ONE_HOUR = 60 * ONE_MINUTE;
     private static final long ONE_DAY = 24 * ONE_HOUR;
+
+    private String TAG = "RNPushNotificationHelper";
 
     public RNPushNotificationHelper(Application context) {
         this.context = context;
@@ -132,7 +148,7 @@ public class RNPushNotificationHelper {
         }
     }
 
-    public void sendToNotificationCentre(Bundle bundle) {
+    public void sendNotificationWithImage(Bundle bundle, Bitmap image) {
         try {
             Class intentClass = getMainActivityClass();
             if (intentClass == null) {
@@ -155,6 +171,7 @@ public class RNPushNotificationHelper {
             Resources res = context.getResources();
             String packageName = context.getPackageName();
 
+            String message = bundle.getString("message");
             String title = bundle.getString("title");
             if (title == null) {
                 ApplicationInfo appInfo = context.getApplicationInfo();
@@ -217,8 +234,6 @@ public class RNPushNotificationHelper {
                 notification.setGroup(group);
             }
 
-            notification.setContentText(bundle.getString("message"));
-
             String largeIcon = bundle.getString("largeIcon");
 
             String subText = bundle.getString("subText");
@@ -270,7 +285,17 @@ public class RNPushNotificationHelper {
                 bigText = bundle.getString("message");
             }
 
-            notification.setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));
+            if (image != null) {
+                notification.setStyle(
+                        new NotificationCompat.BigPictureStyle()
+                                .bigPicture(image)
+                                .setBigContentTitle(title)
+                                .setSummaryText(message)
+                );
+            } else {
+                notification.setContentText(message);
+                notification.setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));
+            }
 
             Intent intent = new Intent(context, intentClass);
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -401,6 +426,37 @@ public class RNPushNotificationHelper {
         } catch (Exception e) {
             Log.e(LOG_TAG, "failed to send push notification", e);
         }
+    }
+
+    public void sendToNotificationCentre(final Bundle bundle) {
+        Log.d(LOG_TAG, "sendToNotificationCentre: bundle: "+bundle.toString());
+        String imageUrl = bundle.getString("imageUrl");
+         if (imageUrl == null) {
+            sendNotificationWithImage(bundle, null);
+            return;
+        }
+         ImagePipeline imagePipeline = Fresco.getImagePipeline();
+         ImageRequest imageRequest = ImageRequestBuilder
+                .newBuilderWithSource(Uri.parse(imageUrl))
+                .setRequestPriority(Priority.HIGH)
+                .setLowestPermittedRequestLevel(ImageRequest.RequestLevel.FULL_FETCH)
+                .build();
+        DataSource<CloseableReference<CloseableImage>> dataSource =
+                imagePipeline.fetchDecodedImage(imageRequest, context);
+         dataSource.subscribe(new BaseBitmapDataSubscriber() {
+            @Override
+            public void onNewResultImpl(@Nullable Bitmap bitmap) {
+                if (bitmap == null) {
+                    sendNotificationWithImage(bundle, null);
+                    return;
+                }
+                sendNotificationWithImage(bundle, bitmap);
+            }
+             @Override
+            public void onFailureImpl(DataSource dataSource) {
+                sendNotificationWithImage(bundle, null);
+            }
+        }, CallerThreadExecutor.getInstance());
     }
 
     private void scheduleNextNotificationIfRepeating(Bundle bundle) {

@@ -21,6 +21,7 @@ public class RNPushNotificationAttributes {
     private static final String AUTO_CANCEL = "autoCancel";
     private static final String LARGE_ICON = "largeIcon";
     private static final String SMALL_ICON = "smallIcon";
+    private static final String IMAGE_URL = "imageUrl";
     private static final String BIG_TEXT = "bigText";
     private static final String SUB_TEXT = "subText";
     private static final String NUMBER = "number";
@@ -45,6 +46,7 @@ public class RNPushNotificationAttributes {
     private final boolean autoCancel;
     private final String largeIcon;
     private final String smallIcon;
+    private final String imageUrl;
     private final String bigText;
     private final String subText;
     private final String number;
@@ -70,6 +72,7 @@ public class RNPushNotificationAttributes {
         autoCancel = bundle.getBoolean(AUTO_CANCEL);
         largeIcon = bundle.getString(LARGE_ICON);
         smallIcon = bundle.getString(SMALL_ICON);
+        imageUrl = bundle.getString(IMAGE_URL);
         bigText = bundle.getString(BIG_TEXT);
         subText = bundle.getString(SUB_TEXT);
         number = bundle.getString(NUMBER);
@@ -97,6 +100,7 @@ public class RNPushNotificationAttributes {
             autoCancel = jsonObject.has(AUTO_CANCEL) ? jsonObject.getBoolean(AUTO_CANCEL) : true;
             largeIcon = jsonObject.has(LARGE_ICON) ? jsonObject.getString(LARGE_ICON) : null;
             smallIcon = jsonObject.has(SMALL_ICON) ? jsonObject.getString(SMALL_ICON) : null;
+            imageUrl = jsonObject.has(IMAGE_URL) ? jsonObject.getString(IMAGE_URL) : null;
             bigText = jsonObject.has(BIG_TEXT) ? jsonObject.getString(BIG_TEXT) : null;
             subText = jsonObject.has(SUB_TEXT) ? jsonObject.getString(SUB_TEXT) : null;
             number = jsonObject.has(NUMBER) ? jsonObject.getString(NUMBER) : null;
@@ -182,6 +186,7 @@ public class RNPushNotificationAttributes {
         bundle.putBoolean(AUTO_CANCEL, autoCancel);
         bundle.putString(LARGE_ICON, largeIcon);
         bundle.putString(SMALL_ICON, smallIcon);
+        bundle.putString(IMAGE_URL, imageUrl);
         bundle.putString(BIG_TEXT, bigText);
         bundle.putString(SUB_TEXT, subText);
         bundle.putString(NUMBER, number);
@@ -211,6 +216,7 @@ public class RNPushNotificationAttributes {
             jsonObject.put(AUTO_CANCEL, autoCancel);
             jsonObject.put(LARGE_ICON, largeIcon);
             jsonObject.put(SMALL_ICON, smallIcon);
+            jsonObject.put(IMAGE_URL, imageUrl);
             jsonObject.put(BIG_TEXT, bigText);
             jsonObject.put(SUB_TEXT, subText);
             jsonObject.put(NUMBER, number);
@@ -246,6 +252,7 @@ public class RNPushNotificationAttributes {
                 ", autoCancel=" + autoCancel +
                 ", largeIcon='" + largeIcon + '\'' +
                 ", smallIcon='" + smallIcon + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
                 ", bigText='" + bigText + '\'' +
                 ", subText='" + subText + '\'' +
                 ", number='" + number + '\'' +

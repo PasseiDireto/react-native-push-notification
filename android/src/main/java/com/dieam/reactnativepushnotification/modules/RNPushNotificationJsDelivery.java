@@ -57,6 +57,15 @@ public class RNPushNotificationJsDelivery {
         sendEvent("notificationActionReceived", params);
     }
 
+    void notifyNotificationDismiss(Bundle bundle) {
+        String bundleString = convertJSON(bundle);
+
+        WritableMap params = Arguments.createMap();
+        params.putString("dataJSON", bundleString);
+
+        sendEvent("notificationDismissReceived", params);
+    }
+
     String convertJSON(Bundle bundle) {
         try {
             JSONObject json = convertJSONObject(bundle);

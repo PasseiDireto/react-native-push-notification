@@ -120,6 +120,20 @@ public class RNPushNotification extends ReactContextBaseJavaModule implements Ac
         }, intentFilter);
     }
 
+    private void registerNotificationsReceiveNotificationDismiss() {
+        IntentFilter intentFilter = new IntentFilter(getReactApplicationContext().getPackageName() + ".RNPushNotificationDismiss");
+
+        getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Bundle bundle = intent.getBundleExtra("notification");
+
+                // Notify the action.
+                mJsDelivery.notifyNotificationDismiss(bundle);
+            }
+        }, intentFilter);
+    }
+
     @ReactMethod
     public void checkPermissions(Promise promise) {
         ReactContext reactContext = getReactApplicationContext();
@@ -235,5 +249,10 @@ public class RNPushNotification extends ReactContextBaseJavaModule implements Ac
     @ReactMethod
     public void registerNotificationActions(ReadableArray actions) {
         registerNotificationsReceiveNotificationActions(actions);
+    }
+
+    @ReactMethod
+    public void registerNotificationDismiss() {
+        registerNotificationsReceiveNotificationDismiss();
     }
 }

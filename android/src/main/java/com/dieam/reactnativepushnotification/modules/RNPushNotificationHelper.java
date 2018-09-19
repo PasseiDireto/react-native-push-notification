@@ -397,6 +397,11 @@ public class RNPushNotificationHelper {
                 }
             }
 
+            Intent dismissIntent = new Intent(context.getPackageName() + ".RNPushNotificationDismiss");
+            dismissIntent.putExtra("notification", bundle);
+            PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(context, 0, dismissIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            notification.setDeleteIntent(dismissPendingIntent);
+
             // Remove the notification from the shared preferences once it has been shown
             // to avoid showing the notification again when the phone is rebooted. If the
             // notification is not removed, then every time the phone is rebooted, we will

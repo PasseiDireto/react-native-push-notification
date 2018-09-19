@@ -296,9 +296,10 @@ public class RNPushNotificationHelper {
                                 .setSummaryText(message)
                 );
             } else {
-                notification.setContentText(message);
                 notification.setStyle(new NotificationCompat.BigTextStyle().bigText(bigText));
             }
+
+            notification.setContentText(message);
 
             Intent intent = new Intent(context, intentClass);
             intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);

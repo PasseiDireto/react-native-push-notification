@@ -15,6 +15,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -22,19 +23,8 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import android.support.annotation.Nullable;
-import com.facebook.common.executors.CallerThreadExecutor;
-import com.facebook.common.references.CloseableReference;
-import com.facebook.datasource.DataSource;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.imagepipeline.common.Priority;
-import com.facebook.imagepipeline.common.ResizeOptions;
-import com.facebook.imagepipeline.core.ImagePipeline;
-import com.facebook.imagepipeline.core.ImagePipelineConfig;
-import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
-import com.facebook.imagepipeline.image.CloseableImage;
-import com.facebook.imagepipeline.request.ImageRequest;
-import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import com.facebook.react.bridge.ReadableMap;
 
@@ -444,28 +434,27 @@ public class RNPushNotificationHelper {
             sendNotificationWithImage(bundle, null);
             return;
         }
-         ImagePipeline imagePipeline = Fresco.getImagePipeline();
-         ImageRequest imageRequest = ImageRequestBuilder
-                .newBuilderWithSource(Uri.parse(imageUrl))
-                .setRequestPriority(Priority.HIGH)
-                .setLowestPermittedRequestLevel(ImageRequest.RequestLevel.FULL_FETCH)
-                .build();
-        DataSource<CloseableReference<CloseableImage>> dataSource =
-                imagePipeline.fetchDecodedImage(imageRequest, context);
-         dataSource.subscribe(new BaseBitmapDataSubscriber() {
+
+        Target target = new Target() {
             @Override
-            public void onNewResultImpl(@Nullable Bitmap bitmap) {
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 if (bitmap == null) {
                     sendNotificationWithImage(bundle, null);
                     return;
                 }
                 sendNotificationWithImage(bundle, bitmap);
             }
-             @Override
-            public void onFailureImpl(DataSource dataSource) {
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
                 sendNotificationWithImage(bundle, null);
             }
-        }, CallerThreadExecutor.getInstance());
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {}
+        };
+
+        Picasso.with(context).load(imageUrl).into(target);
     }
 
     private void scheduleNextNotificationIfRepeating(Bundle bundle) {

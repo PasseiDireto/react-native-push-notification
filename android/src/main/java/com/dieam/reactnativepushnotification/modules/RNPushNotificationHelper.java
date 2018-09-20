@@ -33,6 +33,8 @@ import org.json.JSONException;
 
 import java.util.Arrays;
 
+import com.dieam.reactnativepushnotification.utils.CircleTransform;
+
 import static com.dieam.reactnativepushnotification.modules.RNPushNotification.LOG_TAG;
 import static com.dieam.reactnativepushnotification.modules.RNPushNotificationAttributes.fromJson;
 
@@ -262,12 +264,18 @@ public class RNPushNotificationHelper {
                 largeIconResId = res.getIdentifier("ic_launcher", "mipmap", packageName);
             }
 
-            Bitmap largeIconBitmap = BitmapFactory.decodeResource(res, largeIconResId);
-
+            
+            String largeIconUrl = bundle.getString("largeIconUrl");
+            if(largeIconUrl != null && image != null) {
+                CircleTransform circleTransform = new CircleTransform();
+                image = circleTransform.transform(image);
+            }
+            
             if (image != null) {
                 notification.setLargeIcon(image);
             }
             else if (largeIconResId != 0 && (largeIcon != null || Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)) {
+                Bitmap largeIconBitmap = BitmapFactory.decodeResource(res, largeIconResId);
                 notification.setLargeIcon(largeIconBitmap);
             }
 
@@ -278,7 +286,8 @@ public class RNPushNotificationHelper {
                 bigText = bundle.getString("message");
             }
 
-            if (image != null) {
+            String imageUrl = bundle.getString("imageUrl");
+            if (image != null && imageUrl != null) {
                 notification.setStyle(
                         new NotificationCompat.BigPictureStyle()
                                 .bigPicture(image)
@@ -430,7 +439,13 @@ public class RNPushNotificationHelper {
     public void sendToNotificationCentre(final Bundle bundle) {
         Log.d(LOG_TAG, "sendToNotificationCentre: bundle: "+bundle.toString());
         String imageUrl = bundle.getString("imageUrl");
-         if (imageUrl == null) {
+        String largeIconUrl = bundle.getString("largeIconUrl");
+
+        if (largeIconUrl != null) {
+            imageUrl = largeIconUrl;
+        }
+
+        if (imageUrl == null) {
             sendNotificationWithImage(bundle, null);
             return;
         }

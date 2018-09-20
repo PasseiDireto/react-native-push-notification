@@ -79,6 +79,10 @@ public class RNPushNotification extends ReactContextBaseJavaModule implements Ac
             bundle.putBoolean("foreground", false);
             intent.putExtra("notification", bundle);
             mJsDelivery.notifyNotification(bundle);
+
+            //Dismiss notification
+            int notificationID = Integer.parseInt(bundle.getString("id"));
+            clearLocalNotification(notificationID);
         }
     }
 

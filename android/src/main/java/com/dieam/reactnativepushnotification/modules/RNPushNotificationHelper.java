@@ -22,6 +22,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.os.Looper;
+import android.os.Handler;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -469,7 +471,16 @@ public class RNPushNotificationHelper {
             public void onPrepareLoad(Drawable placeHolderDrawable) {}
         };
 
-        Picasso.with(context).load(imageUrl).into(target);
+        Handler uiHandler = new Handler(Looper.getMainLooper());
+            uiHandler.post(new Runnable(){
+                @Override
+                public void run() {
+                    Picasso
+                        .with(context)
+                        .load(imageUrl)
+                        .into(target);
+                }
+            });
     }
 
     private void scheduleNextNotificationIfRepeating(Bundle bundle) {

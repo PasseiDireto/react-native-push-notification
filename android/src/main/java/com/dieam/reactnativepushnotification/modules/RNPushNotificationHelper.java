@@ -452,7 +452,7 @@ public class RNPushNotificationHelper {
             return;
         }
 
-        Target target = new Target() {
+        final Target target = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 if (bitmap == null) {
@@ -471,13 +471,14 @@ public class RNPushNotificationHelper {
             public void onPrepareLoad(Drawable placeHolderDrawable) {}
         };
 
+        final String finalImageUrl = imageUrl;
         Handler uiHandler = new Handler(Looper.getMainLooper());
             uiHandler.post(new Runnable(){
                 @Override
                 public void run() {
                     Picasso
                         .with(context)
-                        .load(imageUrl)
+                        .load(finalImageUrl)
                         .into(target);
                 }
             });

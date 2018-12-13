@@ -23,12 +23,8 @@ public class CircleTransform implements Transformation {
             y = (source.getHeight() - size) / 2;
 
             Bitmap squaredBitmap = Bitmap.createBitmap(source, x, y, size, size);
-            if (squaredBitmap != source) {
-                source.recycle();
-            }
 
-            Bitmap bitmap;
-            bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+            Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
 
             Canvas canvas = new Canvas(bitmap);
             Paint paint = new Paint();

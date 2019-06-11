@@ -45,7 +45,6 @@ public class CircleTransform implements Transformation {
             // Draw the image smaller than the background so a little border will be seen
             canvas.drawCircle(r, r, r - BORDER_RADIUS, paint);
 
-            squaredBitmap.recycle();
             return bitmap;
         }catch (Exception e){
             Log.d("CIRCLETRANSFORM", "ERRO");

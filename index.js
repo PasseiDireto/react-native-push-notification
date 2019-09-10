@@ -331,4 +331,8 @@ Notifications.clearAllNotifications = function() {
 	return this.callNative('clearAllNotifications', arguments)
 }
 
+Notifications.registerNotificationDismiss = function() {
+  return this.callNative("registerNotificationDismiss", arguments);
+};
+
 module.exports = Notifications;

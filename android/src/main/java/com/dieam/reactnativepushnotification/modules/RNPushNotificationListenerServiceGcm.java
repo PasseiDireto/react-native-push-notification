@@ -3,6 +3,8 @@ package com.dieam.reactnativepushnotification.modules;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.Application;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,7 +15,8 @@ import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
-import com.google.android.gms.gcm.GcmListenerService; 
+import com.google.android.gms.gcm.GcmListenerService;
+import com.google.android.gms.gcm.GcmReceiver;
 
 import org.json.JSONObject;
 
@@ -80,6 +83,13 @@ public class RNPushNotificationListenerServiceGcm extends GcmListenerService {
                 }
             }
         });
+
+        Intent intent = new Intent();
+        intent.putExtras(bundle);
+        intent.setAction("com.google.android.c2dm.intent.RECEIVE");
+        intent.setComponent(new ComponentName(getPackageName(), "br.com.passeidireto.PushNotificationLocalyticsListenerService"));
+
+        GcmReceiver.startWakefulService(getApplicationContext(), intent);
     }
 
     private JSONObject getPushData(String dataString) {
